@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jupyter to PDF</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 600px;
+            margin: 80px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 { margin-bottom: 40px; }
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 40px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #666;
+        }
+        input[type="file"] { display: none; }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover { background: #1d4ed8; }
+        button:disabled { background: #9ca3af; cursor: not-allowed; }
+        .status { margin-top: 20px; color: #666; }
+        .error { color: #dc2626; }
+    </style>
+</head>
+<body>
+    <h1>7.571 Notebook to PDF Converter</h1>
+    <form id="form" action="/convert" method="post" enctype="multipart/form-data">
+        <div class="upload-area" id="dropzone">
+            <p id="filename">Drop .ipynb file here or click to select</p>
+            <input type="file" name="file" id="file" accept=".ipynb" required>
+        </div>
+        <button type="submit" id="btn">Convert to PDF</button>
+    </form>
+    <p class="status" id="status"></p>
+
+    <script>
+        const form = document.getElementById('form');
+        const file = document.getElementById('file');
+        const dropzone = document.getElementById('dropzone');
+        const filename = document.getElementById('filename');
+        const btn = document.getElementById('btn');
+        const status = document.getElementById('status');
+
+        dropzone.onclick = () => file.click();
+
+        file.onchange = () => {
+            if (file.files[0]) {
+                filename.textContent = file.files[0].name;
+            }
+        };
+
+        ['dragover', 'dragenter'].forEach(e => {
+            dropzone.addEventListener(e, (ev) => {
+                ev.preventDefault();
+                dropzone.classList.add('dragover');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(e => {
+            dropzone.addEventListener(e, () => dropzone.classList.remove('dragover'));
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (e.dataTransfer.files[0]) {
+                file.files = e.dataTransfer.files;
+                filename.textContent = e.dataTransfer.files[0].name;
+            }
+        });
+
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            btn.disabled = true;
+            status.textContent = 'Converting...';
+            status.className = 'status';
+
+            try {
+                const resp = await fetch('/convert', {
+                    method: 'POST',
+                    body: new FormData(form)
+                });
+
+                if (!resp.ok) {
+                    throw new Error(await resp.text());
+                }
+
+                const blob = await resp.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = file.files[0].name.replace('.ipynb', '.pdf');
+                a.click();
+                URL.revokeObjectURL(url);
+                status.textContent = 'Done!';
+            } catch (err) {
+                status.textContent = err.message;
+                status.className = 'status error';
+            } finally {
+                btn.disabled = false;
+            }
+        };
+    </script>
+</body>
+</html>
