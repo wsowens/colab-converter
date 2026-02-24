@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-
-export PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
+# $1 is $BUILD_DIR, which becomes /app at runtime
+export PLAYWRIGHT_BROWSERS_PATH="${1}/ms-playwright"
 echo "-----> Installing Playwright Chromium browser"
 python -m playwright install chromium
 echo "-----> Chromium installation complete"
