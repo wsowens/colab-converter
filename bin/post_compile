@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
-echo "-----> Installing Playwright Chromium browser and dependencies"
+export PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
+echo "-----> Installing Playwright Chromium browser"
 python -m playwright install chromium
 echo "-----> Chromium installation complete"
