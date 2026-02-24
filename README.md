@@ -1,6 +1,7 @@
 # Jupyter to PDF
 
 A simple web app to convert Jupyter notebooks to PDF.
+This app is 95% written by Claude, use at your own risk.
 
 ## Installation
 
