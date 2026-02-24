@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 echo "-----> Installing Playwright Chromium browser and dependencies"
-python -m playwright install --with-deps chromium
+python -m playwright install chromium
 echo "-----> Chromium installation complete"
