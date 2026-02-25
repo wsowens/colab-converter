@@ -1,6 +1,6 @@
 # Colab Converter
 
-A simple web app to convert Jupyter notebooks to PDFs. We're essentially just wrapping a terminal command in with a Flask app:
+A simple web app to convert Jupyter notebooks to PDFs. We're essentially just wrapping a terminal command with a Flask app:
 
 > jupyter nbconvert --to="webpdf" {$FILENAME}
 
