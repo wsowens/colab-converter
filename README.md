@@ -1,6 +1,9 @@
-# Jupyter to PDF
+# Colab Converter
 
-A simple web app to convert Jupyter notebooks to PDF.
+A simple web app to convert Jupyter notebooks to PDFs. We're essentially just wrapping a terminal command in with a Flask app:
+
+> jupyter nbconvert --to="webpdf" {$FILENAME}
+
 This app is 95% written by Claude, use at your own risk.
 
 ## Installation
@@ -15,10 +18,12 @@ If you've definitely run `playwright install chromium` and you're still getting 
 > RuntimeError: No suitable chromium executable found on the system. Please
   use '--allow-chromium-download' to allow downloading one,or install it using `playwright install chromium`.
 
-  The headless chromium installed by playwright is probably missing dynamic libraries. Try running 
+The headless chromium installed by playwright is probably missing dynamic libraries. Try running:
   > playwright pdf "google.com" test.pdf
 
-  Until you can get this to succeed. This is a list of packages I had to install in order to get things working. 
+...until it succeeds.  This is a list of packages I had to install in order to get things working:
+
+> apt install libatk1.0-dev libatk1.0-0t64 libatk-bridge2.0-dev libxcomposite1 libxcomposite-dev libxdamage-dev libxrandr-dev libasound-dev
 
 
 
@@ -35,7 +40,3 @@ gunicorn app:app
 ```
 
 Then open http://localhost:8000 (gunicorn) or http://localhost:5000 (dev).
-
-required packages (because for some reason headless chromium doesn't come with everything)
-
-> apt install libatk1.0-dev libatk1.0-0t64 libatk-bridge2.0-dev libxcomposite1 libxcomposite-dev libxdamage-dev libxrandr-dev libasound-dev
