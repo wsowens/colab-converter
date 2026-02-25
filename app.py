@@ -57,8 +57,8 @@ def convert():
         elapsed = time.monotonic() - start
 
         if result.returncode != 0:
-            app.logger.error("%s - conversion failed: %s (%.1fs)", ip, filename, elapsed)
-            return f"Conversion failed: {result.stderr}", 500
+            app.logger.error("%s - conversion failed: %s (%.1fs)\n%s", ip, filename, elapsed, result.stderr)
+            return "Conversion failed. The server logs may have more details.", 500
 
         pdf_name = filename.rsplit(".", 1)[0] + ".pdf"
         pdf_path = os.path.join(tmpdir, pdf_name)
