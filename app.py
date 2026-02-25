@@ -13,6 +13,7 @@ logging.basicConfig(
 )
 
 app = Flask(__name__)
+app.config["MAX_CONTENT_LENGTH"] = 200 * 1024 * 1024  # 200MB
 
 
 def get_ip():
