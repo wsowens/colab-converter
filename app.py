@@ -4,6 +4,7 @@ import subprocess
 import tempfile
 import time
 from flask import Flask, request, send_file, render_template
+from werkzeug.utils import secure_filename
 
 logging.basicConfig(
     level=logging.INFO,
@@ -32,16 +33,17 @@ def convert():
         return "No file uploaded", 400
 
     file = request.files["file"]
+    filename = secure_filename(file.filename)
 
-    if not file.filename.endswith(".ipynb"):
+    if not filename.endswith(".ipynb"):
         app.logger.warning("%s - rejected file: %s", ip, file.filename)
         return "File must be a .ipynb notebook", 400
 
-    app.logger.info("%s - converting: %s", ip, file.filename)
+    app.logger.info("%s - converting: %s", ip, filename)
     start = time.monotonic()
 
     with tempfile.TemporaryDirectory() as tmpdir:
-        notebook_path = os.path.join(tmpdir, file.filename)
+        notebook_path = os.path.join(tmpdir, filename)
         file.save(notebook_path)
 
         result = subprocess.run(
@@ -54,17 +56,17 @@ def convert():
         elapsed = time.monotonic() - start
 
         if result.returncode != 0:
-            app.logger.error("%s - conversion failed: %s (%.1fs)", ip, file.filename, elapsed)
+            app.logger.error("%s - conversion failed: %s (%.1fs)", ip, filename, elapsed)
             return f"Conversion failed: {result.stderr}", 500
 
-        pdf_name = file.filename.rsplit(".", 1)[0] + ".pdf"
+        pdf_name = filename.rsplit(".", 1)[0] + ".pdf"
         pdf_path = os.path.join(tmpdir, pdf_name)
 
         if not os.path.exists(pdf_path):
-            app.logger.error("%s - PDF not generated: %s (%.1fs)", ip, file.filename, elapsed)
+            app.logger.error("%s - PDF not generated: %s (%.1fs)", ip, filename, elapsed)
             return "PDF not generated", 500
 
-        app.logger.info("%s - done: %s (%.1fs)", ip, file.filename, elapsed)
+        app.logger.info("%s - done: %s (%.1fs)", ip, filename, elapsed)
         return send_file(
             pdf_path,
             as_attachment=True,
