@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jupyter to PDF</title>
+    <title>Co-lab Converter</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -39,11 +39,33 @@
         button:disabled { background: #9ca3af; cursor: not-allowed; }
         .status { margin-top: 20px; color: #666; }
         .error { color: #dc2626; }
+        .local-instructions {
+            margin-top: 48px;
+            text-align: left;
+        }
+        .local-instructions h2 {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        pre {
+            background: #f3f4f6;
+            border-radius: 6px;
+            padding: 16px;
+            font-size: 14px;
+            overflow-x: auto;
+            text-align: left;
+        }
+        .hl-comment { color: #6b7280; font-style: italic; }
+        .hl-cmd     { color: #2563eb; font-weight: bold; }
+        .hl-string  { color: #16a34a; }
+        .hl-flag    { color: #9333ea; }
     </style>
 </head>
 <body>
-    <h1>7.571 Notebook to PDF Converter</h1>
-    <form id="form" action="/convert" method="post" enctype="multipart/form-data">
+    <h1>Colab Notebook to PDF Converter</h1>
+    <p style="color: #666; font-size: 16px; margin-top: -30px; margin-bottom: 40px; font-weight: bold">(created for 7.571)</p>
+    <form id="form" action="./convert" method="post" enctype="multipart/form-data">
         <div class="upload-area" id="dropzone">
             <p id="filename">Drop .ipynb file here or click to select</p>
             <input type="file" name="file" id="file" accept=".ipynb" required>
@@ -51,6 +73,15 @@
         <button type="submit" id="btn">Convert to PDF</button>
     </form>
     <p class="status" id="status"></p>
+
+    <div class="local-instructions">
+        <h2>Or copy these commands into your terminal to convert locally:</h2>
+        <pre><code><span class="hl-comment"># install required dependencies</span>
+<span class="hl-cmd">pip</span> install <span class="hl-string">"nbconvert[webpdf]"</span>
+<span class="hl-cmd">playwright</span> install chromium
+<span class="hl-comment"># convert to PDF</span>
+<span class="hl-cmd">jupyter</span> nbconvert <span class="hl-flag">--to</span> webpdf your_notebook.ipynb</code></pre>
+    </div>
 
     <script>
         const form = document.getElementById('form');
@@ -94,7 +125,7 @@
             status.className = 'status';
 
             try {
-                const resp = await fetch('/convert', {
+                const resp = await fetch('./convert', {
                     method: 'POST',
                     body: new FormData(form)
                 });
