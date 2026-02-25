@@ -40,3 +40,29 @@ gunicorn app:app
 ```
 
 Then open http://localhost:8000 (gunicorn) or http://localhost:5000 (dev).
+
+## Running as a systemd service
+
+Edit `colab-converter.service` and replace `YOURUSER` and the two paths:
+
+```ini
+User=youruser
+WorkingDirectory=/path/to/colab-converter
+ExecStart=/path/to/venv/bin/gunicorn app:app
+```
+
+Then install and start it:
+
+```bash
+sudo cp colab-converter.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable colab-converter
+sudo systemctl start colab-converter
+```
+
+Check status and logs:
+
+```bash
+systemctl status colab-converter
+journalctl -u colab-converter -f
+```

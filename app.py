@@ -1,9 +1,21 @@
+import logging
 import os
 import subprocess
 import tempfile
+import time
 from flask import Flask, request, send_file, render_template
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+
 app = Flask(__name__)
+
+
+def get_ip():
+    return request.headers.get("X-Forwarded-For", request.remote_addr)
 
 
 @app.route("/")
@@ -13,19 +25,25 @@ def index():
 
 @app.route("/convert", methods=["POST"])
 def convert():
+    ip = get_ip()
+
     if "file" not in request.files:
+        app.logger.warning("%s - no file in request", ip)
         return "No file uploaded", 400
 
     file = request.files["file"]
+
     if not file.filename.endswith(".ipynb"):
+        app.logger.warning("%s - rejected file: %s", ip, file.filename)
         return "File must be a .ipynb notebook", 400
 
+    app.logger.info("%s - converting: %s", ip, file.filename)
+    start = time.monotonic()
+
     with tempfile.TemporaryDirectory() as tmpdir:
-        # Save uploaded notebook
         notebook_path = os.path.join(tmpdir, file.filename)
         file.save(notebook_path)
 
-        # Convert to PDF
         result = subprocess.run(
             ["jupyter", "nbconvert", "--to", "webpdf", notebook_path],
             capture_output=True,
@@ -33,16 +51,20 @@ def convert():
             cwd=tmpdir,
         )
 
+        elapsed = time.monotonic() - start
+
         if result.returncode != 0:
+            app.logger.error("%s - conversion failed: %s (%.1fs)", ip, file.filename, elapsed)
             return f"Conversion failed: {result.stderr}", 500
 
-        # Find the PDF
         pdf_name = file.filename.rsplit(".", 1)[0] + ".pdf"
         pdf_path = os.path.join(tmpdir, pdf_name)
 
         if not os.path.exists(pdf_path):
+            app.logger.error("%s - PDF not generated: %s (%.1fs)", ip, file.filename, elapsed)
             return "PDF not generated", 500
 
+        app.logger.info("%s - done: %s (%.1fs)", ip, file.filename, elapsed)
         return send_file(
             pdf_path,
             as_attachment=True,

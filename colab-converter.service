@@ -1,0 +1,14 @@
+[Unit]
+Description=Colab Notebook to PDF Converter
+After=network.target
+
+[Service]
+User=YOURUSER
+WorkingDirectory=/path/to/colab-converter
+ExecStart=/path/to/venv/bin/gunicorn --workers 2 --bind 0.0.0.0:8000 app:app
+Restart=always
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
