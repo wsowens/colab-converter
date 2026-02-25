@@ -1,0 +1,7 @@
+{
+  "base_template": "webpdf",
+  "mimetypes": {
+    "application/pdf": true,
+    "text/html": true
+  }
+}

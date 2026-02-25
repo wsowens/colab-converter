@@ -1,0 +1,11 @@
+{%- extends 'lab/index.html.j2' -%}
+
+{% block notebook_css %}
+{{ super() }}
+<style type="text/css">
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+</style>
+{% endblock notebook_css %}

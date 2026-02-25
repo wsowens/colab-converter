@@ -47,8 +47,14 @@ def convert():
         notebook_path = os.path.join(tmpdir, filename)
         file.save(notebook_path)
 
+        template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "nbconvert_templates")
         result = subprocess.run(
-            ["jupyter", "nbconvert", "--to", "webpdf", notebook_path],
+            [
+                "jupyter", "nbconvert", "--to", "webpdf",
+                "--template", "webpdf-linebreak",
+                f"--TemplateExporter.extra_template_basedirs={template_dir}",
+                notebook_path,
+            ],
             capture_output=True,
             text=True,
             cwd=tmpdir,
