@@ -50,9 +50,10 @@ def convert():
         template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "nbconvert_templates")
         result = subprocess.run(
             [
-                "jupyter", "nbconvert", "--to", "webpdf",
-                "--template", "webpdf-linebreak",
+                "jupyter", "nbconvert", "--to", "pdf",
+                "--template", "latex-linebreak",
                 f"--TemplateExporter.extra_template_basedirs={template_dir}",
+                "--PDFExporter.latex_count=1",
                 notebook_path,
             ],
             capture_output=True,

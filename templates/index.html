@@ -76,11 +76,12 @@
 
     <div class="local-instructions">
         <h2>Or copy these commands into your terminal to convert locally:</h2>
-        <pre><code><span class="hl-comment"># install required dependencies</span>
-<span class="hl-cmd">pip</span> install <span class="hl-string">"nbconvert[webpdf]"</span>
-<span class="hl-cmd">playwright</span> install chromium
+        <pre><code><span class="hl-comment"># install required Python dependencies</span>
+<span class="hl-cmd">pip</span> install <span class="hl-string">nbconvert</span>
+<span class="hl-comment"># install LaTeX + pandoc (macOS)</span>
+<span class="hl-cmd">brew</span> install <span class="hl-flag">--cask</span> <span class="hl-string">mactex-no-gui</span> &amp;&amp; <span class="hl-cmd">brew</span> install <span class="hl-string">pandoc</span>
 <span class="hl-comment"># convert to PDF</span>
-<span class="hl-cmd">jupyter</span> nbconvert <span class="hl-flag">--to</span> webpdf your_notebook.ipynb</code></pre>
+<span class="hl-cmd">jupyter</span> nbconvert <span class="hl-flag">--to</span> pdf your_notebook.ipynb</code></pre>
     </div>
 
     <script>

@@ -2,28 +2,23 @@
 
 A simple web app to convert Jupyter notebooks to PDFs. We're essentially just wrapping a terminal command with a Flask app:
 
-> jupyter nbconvert --to="webpdf" {$FILENAME}
+> jupyter nbconvert --to pdf {$FILENAME}
 
 This app is 95% written by Claude, use at your own risk.
 
 ## Installation
 
+**1. System dependencies (Ubuntu)**
+
 ```bash
-pip install -r requirements.txt
-playwright install chromium
+apt install texlive-xetex texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra pandoc
 ```
 
-If you've definitely run `playwright install chromium` and you're still getting an error like:
+**2. Python dependencies**
 
-> RuntimeError: No suitable chromium executable found on the system. Please
-  use '--allow-chromium-download' to allow downloading one,or install it using `playwright install chromium`.
-
-The headless chromium installed by playwright is probably missing dynamic libraries. Try running:
-  > playwright pdf "google.com" test.pdf
-
-...until it succeeds.  This is a list of packages I had to install in order to get things working:
-
-> apt install libatk1.0-dev libatk1.0-0t64 libatk-bridge2.0-dev libxcomposite1 libxcomposite-dev libxdamage-dev libxrandr-dev libasound-dev
+```bash
+pip install -r requirements.txt
+```
 
 
 
